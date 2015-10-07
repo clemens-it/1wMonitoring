@@ -1,0 +1,48 @@
+#1wMonConfig
+
+use strict; 
+
+our $RRDSTEP = 300;
+our $OWINITSTR = "4304";
+my $cfgbpath = "/srv/1wMonitoring";
+
+#
+# Sensors
+#
+
+#to preserve add order of %sensor_info hash tie hash to IxHash module
+#http://www.go4expert.com/forums/showthread.php?t=9219
+use Tie::IxHash;
+our %sensor_info;
+tie(%sensor_info, 'Tie::IxHash');
+
+#do not change the order of the elements of this hash, otherwise TXTDB will be corrupted 
+%sensor_info = (
+ "Boiler"           =>{ label=>"Boiler",            color=>"#2a5931", owid=>"28.2CADEFF50000", owfn=>"temperature" },
+ "Kitchen"          =>{ label=>"Kitchen",           color=>"#ff0000", owid=>"28.4CADEFF50000", owfn=>"temperature" },
+ "Living_Room"      =>{ label=>"Living Room",       color=>"#00ff00", owid=>"28.8CADEFF50000", owfn=>"temperature" },
+);
+
+our %cfgTemp = ();
+$cfgTemp{'RRDDB'} = "$cfgbpath/sensors.rrd";
+$cfgTemp{'TXTDB'} = "$cfgbpath/sensors.txt";
+$cfgTemp{'CURTXTDB'} = "$cfgbpath/currentvalues.txt";
+$cfgTemp{'simultaneous'} = 'simultaneous/temperature';
+
+#
+# Counters
+#
+
+our %counter_info;
+tie(%counter_info, 'Tie::IxHash');
+%counter_info = (
+ "Water"            =>{ label=>"Water ltr",        owid=>"1D.380EBC000000", owfn=>"counters.B", color=>"#ff0000", factor=>1000 },
+ "Electricity"      =>{ label=>"Electricity kWh",  owid=>"1D.580EBC000000", owfn=>"counters.A", color=>"#00dd00", factor=>0.4  },
+);
+
+our %cfgCounter = ();
+$cfgCounter{'RRDDB'} = "$cfgbpath/counter.rrd";
+$cfgCounter{'TXTDB'} = "$cfgbpath/counter.txt";
+$cfgCounter{'CURTXTDB'} = "$cfgbpath/currentcount.txt";
+
+1;
