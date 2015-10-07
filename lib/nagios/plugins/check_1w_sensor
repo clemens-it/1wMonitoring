@@ -1,0 +1,126 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Getopt::Long;
+
+use lib "/usr/lib/nagios/plugins";
+use utils qw (%ERRORS &print_revision &support);
+
+sub print_help ();
+sub print_usage ();
+
+my ($opt_low_w, $opt_low_c, $opt_high_w, $opt_high_c, $opt_help, $opt_version, $opt_file, $opt_sensor_id, $opt_max_age);
+my ($ts);
+my $rev = '0.2.1';
+my $result = "UNKNOWN";
+my $message = "No value found in file";
+my $max_age = 15; # max age in minutes, can be overwritten by paramter -m --max-age
+
+Getopt::Long::Configure('bundling');
+GetOptions(
+	"version" => \$opt_version,
+	"help" => \$opt_help,
+	"s=s" => \$opt_sensor_id, "sensor-id=s" => \$opt_sensor_id,
+	"f=s" => \$opt_file, "file=s" => \$opt_file,
+	"l=f" => \$opt_low_w, "low-warning=f" => \$opt_low_w,
+	"L=f" => \$opt_low_c, "low-critical=f" => \$opt_low_c,
+	"h=f" => \$opt_high_w, "high-warning=f" => \$opt_high_w,
+	"H=f" => \$opt_high_c, "high-critical=f" => \$opt_high_c,
+	"m=i" => \$opt_max_age, "max-age=i"=> \$opt_max_age);
+
+if ($opt_version) {
+	print_revision($0, $rev);
+	exit $ERRORS{'OK'};
+}
+
+if ($opt_help) {
+	print_help();
+	exit $ERRORS{'OK'};
+}
+
+if (!$opt_file) {
+	print "No file specified\n";
+	exit $ERRORS{'UNKNOWN'};
+}
+
+if (!$opt_sensor_id) {
+	print "No sensor ID specified\n";
+	exit $ERRORS{'UNKNOWN'};
+}
+
+unless (defined($opt_low_w) && defined($opt_low_c)) {
+	print "Define all lower warning and critical limits!\n";
+	exit $ERRORS{'UNKNOWN'};
+}
+unless (defined($opt_high_w) && defined($opt_high_c)) {
+	print "Define all higher warning and critical limits!\n";
+	exit $ERRORS{'UNKNOWN'};
+}
+# check if file exists 
+unless (-e $opt_file) {
+	print "File could not be found: $opt_file\n";
+	exit $ERRORS{'CRITICAL'};
+}
+
+# set max_age if parameter was given
+$max_age = $opt_max_age if ($opt_max_age);
+
+
+unless (open FH, "<".$opt_file) {
+	print "can not open file $opt_file: $!\n";
+	exit $ERRORS{'UNKNOWN'};
+}
+while (<FH>) {
+	chomp;
+	#print "$_ - $result - $message - \n";
+	(my $id, my $val, my $remainder) = split(/\t/, $_, 3);
+	if ($id eq "ts") {
+		$ts = $val;
+		if (time()-$val > $max_age*60) {
+			#issue warning
+			$result = 'UNKNOWN';
+			$message = "Stale data. Last measurement was ". localtime($val);
+			last;
+		}
+	}
+	elsif ($id eq $opt_sensor_id) {
+		if ($val =~ /\d+(\.\d+)?/) {
+			$result = 'OK'       if (($val >= $opt_low_w) && ($val <= $opt_high_w)); 
+			$result = 'WARNING'  if (($val < $opt_low_w) || ($val > $opt_high_w)); 
+			$result = 'CRITICAL' if (($val < $opt_low_c) || ($val > $opt_high_c)); 
+			$message = "$opt_sensor_id is $val measured at ". localtime($ts);
+		}
+		else {
+			$result = 'UNKNOWN';
+			$message = "value $val is not a number";
+		}
+		last;
+	}
+}
+close FH;
+print "SENSOR $result: $message\n"; 
+exit $ERRORS{$result};
+
+sub print_usage () {
+
+	print "Usage:\n";
+	print "  $0 -f filename -i <tempid> -l <temp> -L <temp> -h <temp> -H <temp> \n";
+	print "  $0 [--help]\n";
+	print "  $0 [--version]\n";
+}
+
+sub print_help () {
+	print_revision($0, $rev);
+	print "Copyright (c) 2012 Clemens Egger\n\n";
+	print_usage();
+	print "\n";
+	print "  -f <filename>   Filename\n";
+	print "  -s <tempid>     Sensor id\n";
+	print "  -l <temp>       Low warning\n";
+	print "  -L <temp>       Low critical\n";
+	print "  -h <temp>       High warning\n";
+	print "  -H <temp>       High critical\n";
+	print "  -m <max_age>    Max age in minutes (default 15)\n";
+	print "\n";
+	support();
+}
