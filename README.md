@@ -7,11 +7,13 @@ Values can be monitored using nagios by deploying the script in lib/nagios/plugi
 
 ## Installing
 Get code from github
+
     # change into the directory where you want to download the files. 
     # cd xxx
     git clone --depth=1 https://github.com/clemens-it/1wMonitoring.git
 
 I recommend the use of stow for the script's deployment.
+
     mkdir -p /usr/local/stow/1wMonitoring
     cp 1wMonitoring/* /usr/local/stow/1wMonitoring
     rm /usr/local/stow/1wMonitoring/README.md
