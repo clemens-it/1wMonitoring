@@ -11,7 +11,7 @@ use Fcntl ':flock'; # import LOCK_* constants
 
 require "/usr/local/bin/1wMonConfig.pl";
 our %counter_info;
-our %cfgCounter; 
+our %cfgCounter;
 
 #handle command line options
 my %opt = ();
@@ -68,7 +68,7 @@ Proc::Daemon::Init({ dont_close_fh => [ $LOCKH ]});
 my $print_txt_header = 0;
 $print_txt_header = 1 unless -f $cfgCounter{'TXTDB'};
 
-#open file 
+#open file
 open $TXTFH, ">>", $cfgCounter{'TXTDB'};
 
 #turn off output buffering - debugging only
@@ -87,7 +87,7 @@ if ($print_txt_header) {
 
 my $continue = 1;
 $SIG{TERM} = sub { $continue = 0; };
-$SIG{HUP} = sub { $TXTFH->flush(); }; 
+$SIG{HUP} = sub { $TXTFH->flush(); };
 
 $startt = time;
 &$process;
