@@ -13,6 +13,10 @@ require "/usr/local/bin/1wMonConfig.pl";
 our %counter_info;
 our %cfgCounter;
 
+# Avoiding Zombie Processes
+# If you don't need to record the children that have terminated, use:
+$SIG{CHLD} = 'IGNORE';
+
 #handle command line options
 my %opt = ();
 my $gores = GetOptions(\%opt, "verbose");
@@ -20,6 +24,7 @@ exit 2 if (!$gores);
 
 my $interval = 60; # seconds between calls
 my $flushfreq = 10; # output buffer shall be flushed after $flushfreq readings
+my %lastval = ();
 my $startt = 0;
 my $tb4 = 0;
 my $flushct = 0;
@@ -38,7 +43,6 @@ my $owserver = OWNet->new() ; #simpler, again default location, no error message
 
 # sub will be called every $interval seconds
 my $process = sub {
-	my %rrdvals = ();
 	my $txtvals = "";
 	my $t = time;
 	#print $t ."\t". ($t-$tb4) ."\n"; # debug
@@ -49,8 +53,21 @@ my $process = sub {
 		$result =~ s#\s+##g if defined($result);
 
 		$result = (!defined ($result) || $result eq '') ? "U" : $result;
+
+		#play alert sound if $result greater than configured limit
+		if (defined($device->{'alert_if_gt'}) and defined($device->{'alert_wav'}) and $result!='U') {
+			if (defined($lastval{$name}) and ($result-$lastval{$name} > $device->{'alert_if_gt'})) {
+				#create child process - fork
+				my $pid = fork();
+				if ($pid == 0) {
+					# child process
+					system("aplay", "-q", $device->{'alert_wav'});
+					exit($?);
+				}
+			}
+		}
 		$txtvals .= "\t".$result;
-		$rrdvals{$name} = $result;
+		$lastval{$name} = $result;
 		print $name. (" "x(25-length($name))) .$result."\n" if ($opt{'verbose'});
 	}
 	$txtvals = $t.$txtvals."\n";

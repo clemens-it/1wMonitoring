@@ -36,8 +36,9 @@ $cfgTemp{'simultaneous'} = 'simultaneous/temperature';
 our %counter_info;
 tie(%counter_info, 'Tie::IxHash');
 %counter_info = (
- "Water"            =>{ label=>"Water ltr",        owid=>"1D.380EBC000000", owfn=>"counters.B", color=>"#ff0000", factor=>1000 },
- "Electricity"      =>{ label=>"Electricity kWh",  owid=>"1D.580EBC000000", owfn=>"counters.A", color=>"#00dd00", factor=>0.4  },
+ "Water"            =>{ label=>"Water ltr",        owid=>"1D.380EBC000000", owfn=>"counters.B", color=>"#ff0000", factor=>0.4 },
+ "Electricity"      =>{ label=>"Electricity kWh",  owid=>"1D.580EBC000000", owfn=>"counters.A", color=>"#00dd00", factor=>1000,
+	alert_if_gt=>54, alert_wav=>"/usr/local/share/1wMonitoring/alert.wav"},
 );
 
 our %cfgCounter = ();

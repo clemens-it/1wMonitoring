@@ -40,7 +40,7 @@ Do the same with `bin/1wCounterMon.pl` to test it for counter values.
 
 An example of a cron script to call the monitoring process can be found in share/doc/1wMonitoring/1wMonitoring.cron for automatic recording.
 
-For counter values there exists another script which acts as a daemon (`bin/1wCounterMonContinous.pl`). This daemon will however not update the rrd database. For transferring the values into the rrd database two scripts can be used (`fill_txt_into_rrd_logtail.sh` and `update_txt_into_rrd.sh`).  
-The initial idea of this daemon was to read out counter values with a higher frequency than sensor values without causing too many I/O writes for memory cards (e.g. when deployed on a Raspberry Pi).
+For counter values there exists another script which acts as a daemon (`bin/1wCounterMonContinous.pl`). This daemon will however not update the rrd database. For transferring the values into the rrd database two scripts can be used (`fill_txt_into_rrd_logtail.sh` and `update_txt_into_rrd.sh`). The deamon has also another feature: to play an alert sound if a counter has increased more than a configured limit since the last read. To play the sound the command `aplay` is used.  
+The initial idea of this daemon was to read out counter values with a higher frequency than sensor values without causing too many I/O writes for memory cards (e.g. when deployed on a Raspberry Pi).  
 To start this daemon at system startup it can be inserted into the file /etc/rc.local (just add the command /usr/local/bin/1wCounterMonContinous.pl at the end of the file).
 
