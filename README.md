@@ -1,8 +1,8 @@
 # 1wMonitoring
 One Wire Monitoring
 
-This is a collection of scripts to monitor (multiple) values which are to be read out over One Wire devices. Values can be either sensor values (e.g. temperatures, humidity, etc.) or counter values. Data is saved into tab separated text files and are fed into an rrd database.
-Values can be monitored using nagios by deploying the script in lib/nagios/plugins and the corresponding configuration file in share/1wMonitoring/check\_temperature.nagios.cfg (usually to be copied to /etc/nagios-plugins/config/temperature.cfg)
+This is a collection of scripts to record and monitor (multiple) values which are to be read out over One Wire devices. Values can be either sensor values (e.g. temperatures, humidity, etc.) or counter values. Data is saved into tab separated text files and are fed into an rrd database.
+Values can be monitored using nagios or icinga by deploying the script in lib/nagios/plugins and the corresponding configuration file in share/1wMonitoring/check\_temperature.nagios.cfg (usually to be copied to /etc/nagios-plugins/config/temperature.cfg)
 
 
 ## Installing
@@ -15,14 +15,14 @@ Get code from github
 I recommend the use of stow for the script's deployment.
 
     mkdir -p /usr/local/stow/1wMonitoring
-    cp 1wMonitoring/* /usr/local/stow/1wMonitoring
+    cp -r 1wMonitoring/* /usr/local/stow/1wMonitoring
     rm /usr/local/stow/1wMonitoring/README.md
     cd /usr/local/stow
     stow 1wMonitoring
 
 
 ## Setup and configuration
-Have a look at the scripts mentioned below before you execute them. First of all to make sure they do what you want and furthermore because many scripts have their own configuration values at their beginning which may be needed to adjust to fit your needs and configuration.
+Have a look at the scripts mentioned below before you execute them. First of all to make sure they do what you want and furthermore because many scripts have their own configuration values at their beginning. You may need to adjust those values to fit your needs and configuration.
 
 A list of required Debian packages can be found in share/doc/1wMonitoring/required\_Debian\_packages
 
@@ -35,7 +35,7 @@ Create the rrd databases using the script libexec/1wMonitoring/gen_rrd_create.pl
 Execute bin/1wSensorMon.pl to test the read out and writing of the sensor values into the txt file as well as into the rrd database.
 Do the same with bin/1wCounterMon.pl to test it for counter values.
 
-An example of a cron script to call the monitoring process can be found in share/doc/1wMonitoring/1wMonitoring.cron for automatic monitoring.
+An example of a cron script to call the monitoring process can be found in share/doc/1wMonitoring/1wMonitoring.cron for automatic recording.
 
 For counter values there exists another script which acts as a daemon (bin/1wCounterMonContinous.pl). This daemon will however not update the rrd database. For transferring the values into the rrd database two scripts can be used (fill\_txt\_into\_rrd\_logtail.sh and update\_txt\_into\_rrd.sh).
 The initial idea of this daemon was to read out counter values with a higher frequency than sensor values without causing too many I/O writes for memory cards (e.g. when deployed on a Raspberry Pi).
