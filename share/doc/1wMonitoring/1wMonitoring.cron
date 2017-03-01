@@ -10,5 +10,5 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-*/5 * * * *	root	1wTempMon.pl    2> /dev/null
+*/5 * * * *	root	1wSensorMon.pl    2> /dev/null
 */5 * * * *	root	1wCounterMon.pl 2> /dev/null
