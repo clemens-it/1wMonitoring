@@ -25,7 +25,6 @@ I recommend the use of `stow` for the script's deployment.
 
     mkdir -p /usr/local/stow/1wMonitoring
     cp -r 1wMonitoring/* /usr/local/stow/1wMonitoring
-    rm /usr/local/stow/1wMonitoring/README.md
     cd /usr/local/stow
     mv 1wMonitoring/bin/1wMonConfig.pl.sample 1wMonitoring/bin/1wMonConfig.pl
     stow 1wMonitoring
