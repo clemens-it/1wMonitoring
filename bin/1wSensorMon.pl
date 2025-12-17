@@ -1,14 +1,13 @@
 #!/usr/bin/perl -w
 use strict;
 use Getopt::Long;
-use RRDTool::OO;
 use OW;
 
 require "/usr/local/bin/1wMonConfig.pl";
+
 our $OWINITSTR;
 our %sensor_info;
 our %cfgTemp;
-
 
 use Tie::IxHash;
 my %device_info;
@@ -42,38 +41,44 @@ while (my ($name, $device) = each(%sensor_info)) {
 }
 OW::finish();
 
-#write text table containing value history in clear text
-#if file does not exist yet, write the header
-my $print_txt_header = 0;
-$print_txt_header = 1 unless -f $cfgTemp{'TXTDB'};
-open TXTFH, ">>".$cfgTemp{'TXTDB'};
-#header for txt db
-if ($print_txt_header) {
-	print TXTFH "ts";
-	while (my ($name, $device) = each(%sensor_info)) {
-		print TXTFH "\t".$name;
+if (defined $cfgTemp{'TXTDB'}) {
+	#write text table containing value history in clear text
+	#if file does not exist yet, write the header
+	my $print_txt_header = 0;
+	$print_txt_header = 1 unless -f $cfgTemp{'TXTDB'};
+	open TXTFH, ">>".$cfgTemp{'TXTDB'};
+	#header for txt db
+	if ($print_txt_header) {
+		print TXTFH "ts";
+		while (my ($name, $device) = each(%sensor_info)) {
+			print TXTFH "\t".$name;
+		}
+		print TXTFH "\n";
 	}
-	print TXTFH "\n";
+	$txtvals = $ts.$txtvals."\n";
+	print TXTFH $txtvals;
+	close TXTFH;
 }
-$txtvals = $ts.$txtvals."\n";
-print TXTFH $txtvals;
-close TXTFH;
 
-#write file with current values
-open TXTFH, ">".$cfgTemp{'CURTXTDB'};
-print TXTFH "ts\t$ts\n";
-my $txtval = "";
-while (my ($name, $device) = each(%sensor_info)) {
-	next if (not defined $name or $name eq '');
-	$txtval = $name."\t".$rrdvals{$name}."\n";
-	print TXTFH $txtval;
+if (defined $cfgTemp{'CURTXTDB'}) {
+	#write file with current values
+	open TXTFH, ">".$cfgTemp{'CURTXTDB'};
+	print TXTFH "ts\t$ts\n";
+	my $txtval = "";
+	while (my ($name, $device) = each(%sensor_info)) {
+		next if (not defined $name or $name eq '');
+		$txtval = $name."\t".$rrdvals{$name}."\n";
+		print TXTFH $txtval;
+	}
+	close TXTFH;
 }
-close TXTFH;
 
 if (defined $cfgTemp{'RRDDB'}) {
+	use RRDTool::OO;
+
 	# update rrd - error if there is not round-robin database
 	die "Could not find RRD data file in $cfgTemp{'RRDDB'}\n" unless -f $cfgTemp{'RRDDB'};
-	# rrd constructor     
+	# rrd constructor
 	my $rrd = RRDTool::OO->new(file => $cfgTemp{'RRDDB'});
 	$rrd->update(time => $ts, values => \%rrdvals);
 }

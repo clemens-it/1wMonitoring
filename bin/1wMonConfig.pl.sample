@@ -24,9 +24,15 @@ tie(%sensor_info, 'Tie::IxHash');
 );
 
 our %cfgTemp = ();
+# set $cfgTemp{'RRDDB'} to rrd filepath if you want to store data in rrd, otherwise leave undefined
 $cfgTemp{'RRDDB'} = "$cfgbpath/sensors.rrd";
+
+# set $cfgTemp{'TXTDB'} to filepath of TSV file if you want to append data to text file, otherwise leave undefined
 $cfgTemp{'TXTDB'} = "$cfgbpath/sensors.txt";
+
+# set $cfgTemp{'CURTXTDB'} to filepath of TSV file if you want to write the current values to text file, otherwise leave undefined
 $cfgTemp{'CURTXTDB'} = "$cfgbpath/currentvalues.txt";
+
 $cfgTemp{'simultaneous'} = 'simultaneous/temperature';
 
 #
