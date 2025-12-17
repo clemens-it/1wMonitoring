@@ -82,3 +82,34 @@ if (defined $cfgTemp{'RRDDB'}) {
 	my $rrd = RRDTool::OO->new(file => $cfgTemp{'RRDDB'});
 	$rrd->update(time => $ts, values => \%rrdvals);
 }
+
+if (defined $cfgTemp{'INFLUXDB'}) {
+	use LWP::UserAgent;
+	use HTTP::Request;
+
+	# Create a user agent object
+	my $ua = LWP::UserAgent->new;
+	$ua->timeout(15);
+	my $influx_data = '';
+
+
+	# Define the POST data
+	while (my ($name, $device) = each(%sensor_info)) {
+		next if (not defined $name or $name eq '');
+		next if ($rrdvals{$name} eq 'U');
+		$influx_data .= $cfgTemp{'INFLUXDB-PREFIX'} .' '. $name .'='. $rrdvals{$name} ."\n";
+	}
+
+	my $req = HTTP::Request->new('POST', $cfgTemp{'INFLUXDB'});
+	$req->header('Content-Type' => 'text/plain');
+	$req->content($influx_data);
+
+	# Make the POST request
+	my $response = $ua->request($req);
+
+	# Check the response
+	if (!$response->is_success) {
+		print "Influx HTTP POST failed: ". $response->status_line . "\n";
+	}
+}
+

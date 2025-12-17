@@ -35,6 +35,10 @@ $cfgTemp{'CURTXTDB'} = "$cfgbpath/currentvalues.txt";
 
 $cfgTemp{'simultaneous'} = 'simultaneous/temperature';
 
+# set $cfgTemp{'INFLUXDB'} to servers' url if you want to post data to influx REST api, otherwise leave undefined
+#$cfgTemp{'INFLUXDB'} = 'http://hostname:8086/write?db=dbname&precision=s';
+#$cfgTemp{'INFLUXDB-PREFIX'} = 'measurement-name';
+
 #
 # Counters
 #

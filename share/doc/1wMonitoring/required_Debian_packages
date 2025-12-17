@@ -2,5 +2,10 @@ libtie-ixhash-perl
 libow-perl
 libownet-perl
 libproc-daemon-perl
+
+#if you want to write into rrd file
 librrdtool-oo-perl
 rrdtool
+
+#if you want to post data to influx via REST API
+libwww-perl
