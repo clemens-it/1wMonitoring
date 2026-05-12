@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
+use warnings;
 use Getopt::Long;
 use OW;
 
@@ -108,8 +109,33 @@ if (defined $cfgTemp{'INFLUXDB'}) {
 	my $response = $ua->request($req);
 
 	# Check the response
-	if (!$response->is_success) {
+	if (!$response->is_success && $opt{'verbose'}) {
 		print "Influx HTTP POST failed: ". $response->status_line . "\n";
 	}
 }
 
+if (defined $cfgTemp{'REST_JSON'}) {
+	use JSON;
+	use LWP::UserAgent;
+	use HTTP::Request;
+
+	# create copy of rrdvals with lower case keys
+	my %rrdvals_lc = map { lc($_) => $rrdvals{$_} } keys %rrdvals;
+	my $json_str = encode_json \%rrdvals_lc;
+
+	# Create a user agent object
+	my $ua = LWP::UserAgent->new;
+	$ua->timeout(15);
+
+	my $req = HTTP::Request->new('POST', $cfgTemp{'REST_JSON'});
+	$req->header('Content-Type' => 'application/json');
+	$req->content($json_str);
+
+	# Make the POST request
+	my $response = $ua->request($req);
+
+	# Check the response
+	if (!$response->is_success && $opt{'verbose'}) {
+		print "REST JSON HTTP POST failed: ". $response->status_line . "\n";
+	}
+}

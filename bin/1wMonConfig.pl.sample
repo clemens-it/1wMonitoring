@@ -24,20 +24,28 @@ tie(%sensor_info, 'Tie::IxHash');
 );
 
 our %cfgTemp = ();
-# set $cfgTemp{'RRDDB'} to rrd filepath if you want to store data in rrd, otherwise leave undefined
+# set $cfgTemp{'RRDDB'} to rrd filepath if you want to store data in rrd,
+# otherwise leave undefined
 $cfgTemp{'RRDDB'} = "$cfgbpath/sensors.rrd";
 
-# set $cfgTemp{'TXTDB'} to filepath of TSV file if you want to append data to text file, otherwise leave undefined
+# set $cfgTemp{'TXTDB'} to filepath of TSV file if you want to append data to
+# text file, otherwise leave undefined
 $cfgTemp{'TXTDB'} = "$cfgbpath/sensors.txt";
 
-# set $cfgTemp{'CURTXTDB'} to filepath of TSV file if you want to write the current values to text file, otherwise leave undefined
+# set $cfgTemp{'CURTXTDB'} to filepath of TSV file if you want to write the
+# current values to text file, otherwise leave undefined
 $cfgTemp{'CURTXTDB'} = "$cfgbpath/currentvalues.txt";
 
-$cfgTemp{'simultaneous'} = 'simultaneous/temperature';
+# set $cfgTemp{'REST_JSON'} to REST API address to which data should be posted
+#$cfgTemp{'REST_JSON'} = 'http://127.0.0.1:3000/tablename';
 
-# set $cfgTemp{'INFLUXDB'} to servers' url if you want to post data to influx REST api, otherwise leave undefined
+# set $cfgTemp{'INFLUXDB'} to servers' url if you want to post data to influx
+# REST api, otherwise leave undefined
+
 #$cfgTemp{'INFLUXDB'} = 'http://hostname:8086/write?db=dbname&precision=s';
 #$cfgTemp{'INFLUXDB-PREFIX'} = 'measurement-name';
+
+$cfgTemp{'simultaneous'} = 'simultaneous/temperature';
 
 #
 # Counters
