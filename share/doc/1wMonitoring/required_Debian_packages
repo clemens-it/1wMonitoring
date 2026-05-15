@@ -3,9 +3,10 @@ libow-perl
 libownet-perl
 libproc-daemon-perl
 
-#if you want to write into rrd file
+#for writing into rrd file
 librrdtool-oo-perl
 rrdtool
 
-#if you want to post data to influx via REST API
+#for posting data to REST API or influx via REST API
 libwww-perl
+libjson-perl
