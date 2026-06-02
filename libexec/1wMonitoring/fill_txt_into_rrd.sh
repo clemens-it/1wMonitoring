@@ -6,6 +6,10 @@
 p=/srv/1wMonitoring
 txt=$p/sensors.txt
 rrd=$p/sensors.rrd
+if [ -f "$txt" -a -f "$rrd" ]; then
+    rrdvars=$(head -1 $txt | sed -e 's/^ts\t//; s/\t/:/g'; )
+    tail -n +2 $txt | sed -e 's/\t/:/g' | xargs rrdtool update $rrd -t $rrdvars
+else
+    echo "Files $txt and/or $rrd are missing. Skipping."
+fi
 
-rrdvars=$(head -1 $txt | sed -e 's/^ts\t//; s/\t/:/g'; )
-tail -n +2 $txt | sed -e 's/\t/:/g' | xargs rrdtool update $rrd -t $rrdvars
