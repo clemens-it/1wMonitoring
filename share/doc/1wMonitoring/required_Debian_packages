@@ -10,3 +10,14 @@ rrdtool
 #for posting data to REST API or influx via REST API
 libwww-perl
 libjson-perl
+
+logtail
+
+#for one wire
+ow-shell
+owserver
+
+Optional
+========
+nginx-light
+fcgiwrap
