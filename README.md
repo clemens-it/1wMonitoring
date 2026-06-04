@@ -82,7 +82,14 @@ more than a configured limit since the last read. To play the sound the command
 The initial idea of this daemon was to read out counter values with a higher
 frequency than sensor values without causing too many I/O writes for memory
 cards (e.g. when deployed on a Raspberry Pi).
-To start this daemon at system startup it can be inserted into the file
-`/etc/rc.local` (just add the command `/usr/local/bin/1wCounterMonContinous.pl`
-at the end of the file). Keep in mind to check and adjust the value of the
-parameter `step` for the RRD database creation.
+Keep in mind to check and adjust the value of the parameter `step` for the RRD
+database creation.
+
+To use the daemon as a systemd service, copy the service file, enable and start
+the service:
+
+    cp share/doc/1wMonitoring/1-wire-monitoring.service /etc/systemd/system/
+    systemctl enable  1-wire-monitoring
+    systemctl start  1-wire-monitoring
+    systemctl status  1-wire-monitoring
+
